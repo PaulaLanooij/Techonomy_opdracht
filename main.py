@@ -93,7 +93,8 @@ df['Gemiddelde rating'] = pd.cut(df['Gemiddelde rating'], bins=[0, 2, 4, 5], lab
 Y = df['Gemiddelde rating']
 X = df.drop('Gemiddelde rating', axis = 1)
 
-#%%
+#%% Max depth bepalen
+
 # Train-test split
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=2)
 
@@ -138,7 +139,7 @@ clf = DecisionTreeClassifier(max_depth = 6, random_state=2)
 clf.fit(X_train, y_train)
 
 # Plot de beslissingsboom
-plt.figure(figsize=(10, 6))
+plt.figure(figsize=(15, 10))
 plot_tree(clf, filled=True, feature_names=X.columns, class_names=np.unique(Y), rounded=True)
 plt.show()
 
@@ -161,6 +162,7 @@ print(class_report)
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+plt.figure(figsize=(10, 10))
 sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', cbar=False)
 plt.xlabel('Voorspelde Labels')
 plt.ylabel('Werkelijke Labels')
@@ -218,15 +220,18 @@ def data_preparation(df,publicatiejaar,taal,aantal_paginas,categorie):
 #%% FastAPI
 
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import uvicorn
 
 
 class Item(BaseModel):
-    Publicatiejaar: int
-    Taal: str
-    Aantal_paginas: int
-    Categorie: str
+    Publicatiejaar: int = Field(..., description="Publicatiejaar van het item in getallen")
+    Taal: str = Field(..., description="nl of en")
+    Aantal_paginas: int = Field(..., description = "Aantal paginas in getallen")
+    Categorie: str = Field(..., description = "Keuze uit: American drama, Amsterdam (Netherlands), Architects, Biography & Autobiography, 'Body, Mind & Spirit', Buddhism, Business & Economics,"
+    "Cabinets of curiosities, Christmas stories, Cooking, Crafts & Hobbies, Cultural landscapes, Design, Dutch fiction, Education, Evolution (Biology), Family & Relationships, Fiction, Four-color problem,"
+    "Geodynamics, Gouda (Netherlands), Governors, History, Holocaust, Jewish (1939-1945), Juvenile Fiction, Juvenile Nonfiction, Literary Criticism, Medical, Philosophy, Psychology, Religion, Religious drama, Dutch,"
+    "Science, Technology & Engineering, Templars, True Crime, Young Adult Fiction")
     
 app = FastAPI()    
     
